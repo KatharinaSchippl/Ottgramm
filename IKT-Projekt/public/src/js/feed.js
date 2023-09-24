@@ -166,7 +166,7 @@ function createCard(card) {
   image.src = card.image_id;
   cardTitle.style.backgroundImage = 'url('+ image.src +')';
   cardTitle.style.backgroundSize = 'cover';
-  cardTitle.style.backgroundColor = '#FBF4ED';
+
   cardWrapper.appendChild(cardTitle);
   let cardTitleTextElement = document.createElement('h2');
   cardTitleTextElement.className = 'mdl-card__title-text';
@@ -257,7 +257,6 @@ form.addEventListener('submit', event => {
     console.log('file', file)
 
     if('serviceWorker' in navigator && 'SyncManager' in window) {
-       /*  if(!navigator.online) { */
         navigator.serviceWorker.ready
             .then( sw => {
                 let post = {
@@ -277,10 +276,9 @@ form.addEventListener('submit', event => {
                     snackbarContainer.showSnackbar(data);
                 });
             });
-		//} 
-      }  else {
+		} else {
 	        sendDataToBackend();
-    } 
+	    }
 });
 
 captureButton.addEventListener('click', event => {
@@ -305,7 +303,3 @@ captureButton.addEventListener('click', event => {
         console.log('file', file)
     })
 });
-
-imagePicker.addEventListener('change', event => {
-    file = event.target.files[0];
-}); 

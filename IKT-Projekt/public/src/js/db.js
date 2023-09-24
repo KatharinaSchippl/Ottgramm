@@ -1,19 +1,16 @@
-const db = idb.openDB('posts-store', 2, {
+const db = idb.openDB('posts-store', 1, {
     upgrade(db) { // Create a store of objects
     const store1 = db.createObjectStore('posts', { // The 'id' property of the object will be the key.
-        keyPath: '_id', // Create an index on the 'id' property of the objects.
-       autoIncrement: true,
+        keyPath: 'id', // Create an index on the 'id' property of the objects.
          }); 
-        store1.createIndex('_id', '_id');
+        store1.createIndex('id', 'id');
         // Create another store of objects
-    const store2 = db.createObjectStore('sync-posts', {
-            keyPath: 'id', 
-           autoIncrement: true,
+        const store2 = db.createObjectStore('sync-posts', {
+            keyPath: 'id',
         });
         store2.createIndex('id', 'id');
     },
 });
-
     function writeData(st, data) {
         return db
             .then( dbPosts => {

@@ -1,7 +1,7 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/db.js');
 
-const CACHE_VERSION = 8;
+const CACHE_VERSION = 6;
 const CURRENT_STATIC_CACHE = 'static-v' + CACHE_VERSION;
 const CURRENT_DYNAMIC_CACHE = 'dynamic-v' + CACHE_VERSION;
 const STATIC_FILES = [
@@ -146,45 +146,6 @@ self.addEventListener('notificationclick', event => {
         notification.close();
     } else {
         console.log(action);
-        event.waitUntil(
-            clients.matchAll()      // clients sind alle Windows (Browser), fuer die der Service Worker verantwortlich ist
-                .then( clientsArray => {
-                    let client = clientsArray.find( c => {
-                        return c.visibilityState === 'visible';
-                    });
-
-                    if(client !== undefined) {
-                        client.navigate(notification.data.url);
-                        client.focus();
-                    } else {
-                        clients.openWindow(notification.data.url);
-                    }
-                    notification.close();
-                })
-        );
     }
 });
 
-self.addEventListener('notificationclose', event => {
-    console.log('notification was closed', event);
-});
-
-self.addEventListener('push', event => {
-    console.log('push notification received', event);
-    let data = { title: 'Test', content: 'Fallback message', openUrl: '/'};
-    if(event.data) {
-        data = JSON.parse(event.data.text());
-    }
-
-    let options = {
-        body: data.content,
-        icon: '/src/images/icons/fiw96x96.png',
-        data: {
-            url: data.openUrl
-        }
-    };
-
-    event.waitUntil(
-        self.registration.showNotification(data.title, options)
-    );
-});

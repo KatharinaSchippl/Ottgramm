@@ -1,4 +1,30 @@
+/* if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+        .register('/sw.js')
+        .then(function(registration) {
+            console.log('service worker registriert', registration);
+            console.log('Scope ist: ' + registration.scope);
+
+        }).catch(function(error) {
+            console.log('Service worker registration failed:', error);
+        });
+        //sercive worker in controll?
+        if (navigator.serviceWorker.controller) {
+            console.log('This page is currently controlled by:', navigator.serviceWorker.controller);
+        }
+
+        // Then, register a handler to detect when a new or
+        // updated service worker takes control.
+        navigator.serviceWorker.oncontrollerchange = function() {
+            console.log('This page is now controlled by:', navigator.serviceWorker.controller);
+        };
+    } else {
+        console.log('Service workers are not supported.');
+    }
+
+ */
 let enableNotificationsButtons = document.querySelectorAll('.enable-notifications');
+
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
@@ -31,61 +57,6 @@ function displayConfirmNotification() {
     }
 
 }
-/* 
- function urlBase64ToUint8Array(base64String) {
-    var padding = '='.repeat((4 - base64String.length % 4) % 4);
-    var base64 = (base64String + padding)
-        .replace(/\-/g, '+')
-        .replace(/_/g, '/');
-
-    var rawData = window.atob(base64);
-    var outputArray = new Uint8Array(rawData.length);
-
-    for (var i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-}  */
-
-function configurePushSubscription() {
-    if(!('serviceWorker' in navigator)) {
-        return
-    }
-    let swReg;
-    navigator.serviceWorker.ready
-        .then( sw => {
-            swReg = sw;
-            return sw.pushManager.getSubscription();
-        })
-        .then( sub => {
-            if(sub === null) {
-                // create a new subscription
-                let vapidPublicKey = 'BKc4fh07Ws8qxBiwX8s8QJ8fzfoi7NN2uxklVKOt05jVxyEFS-QNu_EgqnJ-t3MEbScv-JmKwE3rCKl_fTcIf7M';
-                let convertedVapidPublicKey = urlBase64ToUint8Array(vapidPublicKey);
-                return swReg.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: convertedVapidPublicKey,
-                });
-            } else {
-                // already subscribed
-            }
-        })
-        .then( newSub => {
-            return fetch('http://localhost:3000/subscription', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(newSub)
-            })
-            .then( response => {
-                if(response.ok) {
-                    displayConfirmNotification();
-                }
-            })
-        });
-}
 
 function askForNotificationPermission() {
     Notification.requestPermission( result => {
@@ -94,13 +65,12 @@ function askForNotificationPermission() {
             console.log('No notification permission granted');
         } else {
             // notifications granted
-            //displayConfirmNotification();
-            configurePushSubscription();
+            displayConfirmNotification();
         }
     });
 }
 
-if('Notification' in window && 'serviceWorker' in navigator) {
+if('Notification' in window) {
     for(let button of enableNotificationsButtons) {
         button.style.display = 'inline-block';
         button.addEventListener('click', askForNotificationPermission);
